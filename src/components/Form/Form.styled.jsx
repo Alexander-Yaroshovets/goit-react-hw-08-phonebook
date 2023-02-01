@@ -44,9 +44,8 @@ export const FormTitle = styled.h2`
 
 export const FormButton = styled.button`
   padding: 8px 20px;
-
   border: 1px solid blueviolet;
-  border-radius: 2px;
+  border-radius: 5px;
   background-color: aquamarine;
   cursor: pointer;
   align-self: flex-end;

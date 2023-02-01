@@ -4,8 +4,10 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { FilterInput, FilterLabel } from './Filter.stayled';
 
-import { hendleChangeContact } from 'redux/filterSlice';
-import { selectFilter } from 'redux/selectors';
+import { hendleChangeContact } from 'redux/contacts/filterSlice';
+
+import { selectFilter } from 'redux/contacts/contactsSelectors';
+
 export const Filter = () => {
   const dispatch = useDispatch();
 

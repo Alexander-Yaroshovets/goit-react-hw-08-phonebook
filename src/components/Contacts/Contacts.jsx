@@ -1,26 +1,33 @@
 import { useSelector, useDispatch } from 'react-redux';
 
-import { deleteContact } from 'redux/operations';
+import { useEffect } from 'react';
 
-import { selectContacts, selectFilter } from 'redux/selectors';
+import { deleteContact } from 'redux/contacts/contactsOperations';
 
-import PropTypes from 'prop-types';
+import { selectContacts, selectFilter } from 'redux/contacts/contactsSelectors';
+
+import { fetchContacts } from 'redux/contacts/contactsOperations';
 
 import {
-  ContactName,
-  ContactTitle,
-  CotactList,
   ContactButton,
-  ContactItem,
-  ContactNumber,
+  Transaction,
+  TransactionHead,
+  TransactionBody,
+  Table,
+  TableHead,
+  InfoText,
 } from './Contacts.styled';
 
-export const Contacts = ({ title }) => {
+export const Contacts = () => {
   const dispatch = useDispatch();
 
   const contacts = useSelector(selectContacts);
 
   const filterValue = useSelector(selectFilter);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, [dispatch]);
 
   const getFilterdContact = () => {
     const normalizedFilter = filterValue.toLowerCase();
@@ -32,31 +39,34 @@ export const Contacts = ({ title }) => {
 
   const filteredContacts = getFilterdContact();
 
-  return (
-    <>
-      <ContactTitle>{title}</ContactTitle>
+  return contacts.length > 0 ? (
+    <Transaction>
+      <TransactionHead>
+        <tr>
+          <TableHead>Name</TableHead>
+          <TableHead>Number</TableHead>
+          <TableHead>Delete Contact</TableHead>
+        </tr>
+      </TransactionHead>
 
-      <CotactList>
-        {contacts &&
-          filteredContacts.map(({ id, name, phone }) => {
-            return (
-              <ContactItem key={id}>
-                <ContactName>{name}:</ContactName>
-                <ContactNumber>{phone}</ContactNumber>
-                <ContactButton
-                  type="button"
-                  onClick={() => dispatch(deleteContact(id))}
-                >
-                  delete
-                </ContactButton>
-              </ContactItem>
-            );
-          })}
-      </CotactList>
-    </>
+      {filteredContacts.map(({ id, name, number }) => (
+        <TransactionBody>
+          <tr key={id}>
+            <Table>{name}</Table>
+            <Table>{number}</Table>
+            <Table>
+              <ContactButton
+                type="button"
+                onClick={() => dispatch(deleteContact(id))}
+              >
+                delete
+              </ContactButton>
+            </Table>
+          </tr>
+        </TransactionBody>
+      ))}
+    </Transaction>
+  ) : (
+    <InfoText>You Phonebook is empty</InfoText>
   );
-};
-
-Contacts.propTypes = {
-  title: PropTypes.string.isRequired,
 };

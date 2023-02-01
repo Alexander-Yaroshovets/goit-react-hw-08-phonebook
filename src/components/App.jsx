@@ -1,30 +1,72 @@
-import { Form } from './Form';
+import { lazy, Suspense, useEffect } from 'react';
 
-import { Contacts } from './Contacts';
+import { useDispatch } from 'react-redux';
 
-import { Filter } from './Filter';
+import { Route, Routes } from 'react-router-dom';
 
-import { useEffect } from 'react';
+import { getCurrentUser } from '../redux/authorization/authorization-operations';
 
-import { useDispatch, useSelector } from 'react-redux';
+import NotFound from '../pages/NotFound/NotFound';
 
-import { fetchContacts } from 'redux/operations';
+import Layout from '../components/Layout/Layout';
 
-import { selectIsLoading, selectError } from 'redux/selectors';
+import Loader from '../components/Loader/Loader';
 
-export const App = () => {
+import PrivateRoute from './PrivateRoute/PrivateRoute';
+
+import PublicRoute from './PublicRoute/PublicRoute';
+
+const HomePage = lazy(() => import('../pages/HomePage/HomePage'));
+
+const ContactsPage = lazy(() => import('../pages/ContactsPage/ContactsPage'));
+
+const RegistrationPage = lazy(() =>
+  import('../pages/RegistrationPage/RegistrationPage')
+);
+const LoginPage = lazy(() => import('../pages/LoginPage/LoginPage'));
+
+export default function App() {
   const dispatch = useDispatch();
-  const isLoading = useSelector(selectIsLoading);
-  const error = useSelector(selectError);
+
   useEffect(() => {
-    dispatch(fetchContacts());
+    dispatch(getCurrentUser());
   }, [dispatch]);
+
   return (
-    <>
-      <Form title="Phonebook" />
-      <Filter />
-      {isLoading && !error && <b>Request in progress!...</b>}
-      <Contacts title="MyContacts" />
-    </>
+    <Suspense fallback={<Loader />}>
+      <Routes>
+        <Route path="/" element={<Layout />}>
+          <Route index element={<HomePage />} />
+
+          <Route
+            path="contacts"
+            element={
+              <PrivateRoute>
+                <ContactsPage />
+              </PrivateRoute>
+            }
+          />
+
+          <Route
+            path="register"
+            element={
+              <PublicRoute restricted>
+                <RegistrationPage />
+              </PublicRoute>
+            }
+          />
+
+          <Route
+            path="login"
+            element={
+              <PublicRoute restricted>
+                <LoginPage />
+              </PublicRoute>
+            }
+          />
+          <Route path="*" element={<NotFound />} />
+        </Route>
+      </Routes>
+    </Suspense>
   );
-};
+}

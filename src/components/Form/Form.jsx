@@ -2,9 +2,11 @@ import { useState } from 'react';
 
 import { useSelector, useDispatch } from 'react-redux';
 
-import { addContact } from 'redux/operations';
+import { addContact } from 'redux/contacts/contactsOperations';
 
-import { selectContacts } from 'redux/selectors';
+import { selectContacts } from 'redux/contacts/contactsSelectors';
+
+import { Notify } from 'notiflix/build/notiflix-notify-aio';
 
 import {
   ContactForm,
@@ -20,14 +22,14 @@ export const Form = ({ title }) => {
   const contacts = useSelector(selectContacts);
 
   const [name, setname] = useState('');
-  const [phone, setphone] = useState('');
+  const [number, setnumber] = useState('');
 
   const handleSubmit = event => {
     event.preventDefault();
 
     const newContact = {
       name,
-      phone,
+      number,
     };
     dispatch(addContact(newContact));
     reset();
@@ -35,7 +37,7 @@ export const Form = ({ title }) => {
 
   const reset = () => {
     setname('');
-    setphone('');
+    setnumber('');
   };
 
   const handleInputChange = event => {
@@ -46,7 +48,7 @@ export const Form = ({ title }) => {
         setname(value);
         break;
       case 'number':
-        setphone(value);
+        setnumber(value);
         break;
       default:
         return;
@@ -55,14 +57,14 @@ export const Form = ({ title }) => {
     contacts &&
       contacts.find(contact => {
         if (contact.name.toLowerCase() === value.toLowerCase()) {
-          alert(`${value} is olredy in contact`);
+          Notify.failure(`Contact ${value}, olredy in contacts`);
         }
         switch (name) {
           case 'name':
             setname(value);
             break;
           case 'number':
-            setphone(value);
+            setnumber(value);
             break;
           default:
         }
@@ -90,7 +92,7 @@ export const Form = ({ title }) => {
         <FormLabel>
           Number
           <FormInput
-            value={phone}
+            value={number}
             type="tel"
             name="number"
             pattern="\+?\d{1,4}?[-.\s]?\(?\d{1,3}?\)?[-.\s]?\d{1,4}[-.\s]?\d{1,4}[-.\s]?\d{1,9}"

@@ -4,7 +4,7 @@ const filterSlice = createSlice({
   name: 'filter',
   initialState: '',
   reducers: {
-    hendleChangeContact(state, action) {
+    hendleChangeContact(_, action) {
       return action.payload;
     },
   },
